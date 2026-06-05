@@ -1,0 +1,30 @@
+[package]
+name = "cirious_codex_config"
+version = "0.1.0"
+authors = ["Cirious Studio <cirious.studio@proton.me>"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+description = "A robust, foundational configuration management framework for the Cirious ecosystem."
+homepage = "https://github.com/cirious-studio/cirious_codex_config"
+repository = "https://github.com/cirious-studio/cirious_codex_config"
+documentation = "https://docs.rs/cirious_codex_config"
+keywords = ["config", "settings", "serde", "configuration", "framework"]
+categories = ["config", "development-tools"]
+exclude = [".github/", ".gitignore"]
+
+[dependencies]
+
+[features]
+default = []
+
+[lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+missing_debug_implementations = "warn"
+
+[lints.clippy]
+pedantic = "warn"
+nursery = "warn"
+unwrap_used = "warn"
+expect_used = "warn"

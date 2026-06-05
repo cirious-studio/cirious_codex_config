@@ -15,12 +15,19 @@ dependencies = [
 name = "cirious_codex_config"
 version = "0.1.0"
 dependencies = [
+ "cirious_codex_result",
  "ron",
  "serde",
  "serde_json",
  "serde_yaml",
  "toml",
 ]
+
+[[package]]
+name = "cirious_codex_result"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "071a083c79571e0ede7ee24e8b4d8be6596b8b7c8de8902928cee56e62ffee9b"
 
 [[package]]
 name = "equivalent"

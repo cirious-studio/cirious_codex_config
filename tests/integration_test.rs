@@ -11,7 +11,7 @@ struct Config {
 #[test]
 fn test_public_api() {
   let ron_data = r#"( key: "value" )"#;
-  let parsed: Config = ConfigFormat::Ron.parse(ron_data).unwrap();
+  let parsed: Config = ConfigFormat::Ron.parse(ron_data).unwrap().value;
 
   assert_eq!(parsed.key, "value");
 }

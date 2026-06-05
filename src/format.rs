@@ -1,5 +1,6 @@
 //! Configuration formatting and parsing definitions.
 
+use cirious_codex_result::{codex_ok, CodexError, Result};
 use serde::de::DeserializeOwned;
 /// Represents the supported configuration formats.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -25,19 +26,46 @@ impl ConfigFormat {
   /// Returns a `String` containing the parsing error if the provided content
   /// is not valid for the selected configuration format, or if the format feature
   /// is not enabled.
-  pub fn parse<T: DeserializeOwned>(&self, content: &str) -> Result<T, String> {
+  pub fn parse<T: DeserializeOwned>(&self, content: &str) -> Result<T> {
     match self {
-      Self::Ron => ron::from_str(content).map_err(|e| format!("RON parsing error: {e}")),
-      Self::Json => serde_json::from_str(content).map_err(|e| format!("JSON parsing error: {e}")),
+      Self::Ron => match ron::from_str::<T>(content) {
+        Ok(v) => codex_ok!(v),
+        Err(e) => Err(CodexError::builder(
+          "RON_PARSE_ERROR",
+          format!("Invalid RON format: {e}"),
+        )),
+      },
+      Self::Json => match serde_json::from_str::<T>(content) {
+        Ok(v) => codex_ok!(v),
+        Err(e) => Err(CodexError::builder(
+          "JSON_PARSE_ERROR",
+          format!("Invalid JSON format: {e}"),
+        )),
+      },
 
       #[cfg(feature = "toml")]
-      Self::Toml => toml::from_str(content).map_err(|e| format!("TOML parsing error: {e}")),
+      Self::Toml => match toml::from_str::<T>(content) {
+        Ok(v) => codex_ok!(v),
+        Err(e) => Err(CodexError::builder(
+          "TOML_PARSE_ERROR",
+          format!("Invalid TOML format: {e}"),
+        )),
+      },
 
       #[cfg(feature = "yaml")]
-      Self::Yaml => serde_yaml::from_str(content).map_err(|e| format!("YAML parsing error: {e}")),
+      Self::Yaml => match serde_yaml::from_str::<T>(content) {
+        Ok(v) => codex_ok!(v),
+        Err(e) => Err(CodexError::builder(
+          "YAML_PARSE_ERROR",
+          format!("Invalid YAML format: {e}"),
+        )),
+      },
 
       #[allow(unreachable_patterns)]
-      _ => Err("Selected format is not enabled via features".to_string()),
+      _ => Err(CodexError::builder(
+        "FORMAT_NOT_ENABLED",
+        "Selected format is not enabled via features",
+      )),
     }
   }
 }
@@ -62,10 +90,10 @@ mod tests {
             version: 1,
         )"#;
 
-    let result: Result<DummyConfig, String> = ConfigFormat::Ron.parse(content);
+    let result: Result<DummyConfig> = ConfigFormat::Ron.parse(content);
 
     assert!(result.is_ok());
-    let config = result.unwrap();
+    let config = result.unwrap().value;
     assert_eq!(config.name, "Codex");
     assert_eq!(config.version, 1);
   }
@@ -77,7 +105,7 @@ mod tests {
             "version": 1
         }"#;
 
-    let result: Result<DummyConfig, String> = ConfigFormat::Json.parse(content);
+    let result: Result<DummyConfig> = ConfigFormat::Json.parse(content);
     assert!(result.is_ok());
   }
 
@@ -89,7 +117,7 @@ mod tests {
             version: 1
         ";
 
-    let result: Result<DummyConfig, String> = ConfigFormat::Yaml.parse(content);
+    let result: Result<DummyConfig> = ConfigFormat::Yaml.parse(content);
     assert!(result.is_ok());
   }
 
@@ -101,7 +129,7 @@ mod tests {
             version = 1
         "#;
 
-    let result: Result<DummyConfig, String> = ConfigFormat::Toml.parse(content);
+    let result: Result<DummyConfig> = ConfigFormat::Toml.parse(content);
     assert!(result.is_ok());
   }
 }

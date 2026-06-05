@@ -24,11 +24,13 @@ fn main() {
   let result = cirious_codex_config::ConfigBuilder::new()
     .add_source(ron_content, ConfigFormat::Ron)
     .unwrap()
+    .value
     .add_env_prefix("APP_")
     .build::<AppSettings>();
 
   match result {
-    Ok(settings) => {
+    Ok(ok_wrapper) => {
+      let settings = ok_wrapper.value;
       println!("App Name: {}", settings.app_name);
       println!("Debug Mode: {}", settings.debug_mode);
     }

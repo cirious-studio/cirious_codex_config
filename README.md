@@ -48,9 +48,13 @@ fn main() {
 
     // Build configuration using multiple sources (File + Environment Variables)
     let settings: AppSettings = ConfigBuilder::new()
-        .add_source(ron_content, ConfigFormat::Ron).unwrap()
+        .add_source(ron_content, ConfigFormat::Ron)
+        .unwrap()
+        .value
         .add_env_prefix("APP_") // e.g. APP_DEBUG_MODE=false
-        .build().unwrap();
+        .build::<AppSettings>()
+        .unwrap()
+        .value;
     
     println!("Loaded config for: {}", settings.app_name);
 }
@@ -64,7 +68,7 @@ The architecture is currently being mapped out for the initial `v0.1` release. P
 
 - [x] Support for multiple configuration formats (JSON, TOML, YAML).
 - [x] Environment variable overrides.
-- [ ] Robust validation and error tracking using `cirious_codex_result`.
+- [x] Robust validation and error tracking using `cirious_codex_result`.
 - [ ] Integrate optional feature for terminal color support with `cirious_codex_term`.
 
 ---

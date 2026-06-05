@@ -1,4 +1,5 @@
 #![allow(missing_docs)]
+#![allow(clippy::unwrap_used)]
 
 use cirious_codex_config::{format::ConfigFormat, Deserialize};
 
@@ -16,16 +17,21 @@ fn main() {
         )
     "#;
 
+  std::env::set_var("APP_DEBUG_MODE", "false");
+
   println!("Loading configuration...");
 
-  match ConfigFormat::Ron.parse::<AppSettings>(ron_content) {
+  let result = cirious_codex_config::ConfigBuilder::new()
+    .add_source(ron_content, ConfigFormat::Ron)
+    .unwrap()
+    .add_env_prefix("APP_")
+    .build::<AppSettings>();
+
+  match result {
     Ok(settings) => {
-      println!("Success!");
       println!("App Name: {}", settings.app_name);
       println!("Debug Mode: {}", settings.debug_mode);
     }
-    Err(e) => {
-      eprintln!("Failed to load config: {e}");
-    }
+    Err(e) => eprintln!("Failed: {e}"),
   }
 }

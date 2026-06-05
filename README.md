@@ -30,7 +30,7 @@ cirious_codex_config = "0.1.0"
 And then in your code:
 
 ```rust
-use cirious_codex_config::{format::ConfigFormat, Deserialize};
+use cirious_codex_config::{format::ConfigFormat, ConfigBuilder, Deserialize};
 
 #[derive(Debug, Deserialize)]
 struct AppSettings {
@@ -46,8 +46,11 @@ fn main() {
         )
     "#;
 
-    // The library uses RON as the default format
-    let settings: AppSettings = ConfigFormat::Ron.parse(ron_content).unwrap();
+    // Build configuration using multiple sources (File + Environment Variables)
+    let settings: AppSettings = ConfigBuilder::new()
+        .add_source(ron_content, ConfigFormat::Ron).unwrap()
+        .add_env_prefix("APP_") // e.g. APP_DEBUG_MODE=false
+        .build().unwrap();
     
     println!("Loaded config for: {}", settings.app_name);
 }
@@ -60,7 +63,7 @@ fn main() {
 The architecture is currently being mapped out for the initial `v0.1` release. Planned features include:
 
 - [x] Support for multiple configuration formats (JSON, TOML, YAML).
-- [ ] Environment variable overrides.
+- [x] Environment variable overrides.
 - [ ] Robust validation and error tracking using `cirious_codex_result`.
 - [ ] Integrate optional feature for terminal color support with `cirious_codex_term`.
 

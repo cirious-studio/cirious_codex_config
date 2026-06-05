@@ -7,7 +7,7 @@ pub enum ConfigFormat {
   /// RON format (Rusty Object Notation), the default standard.
   Ron,
   /// JSON format (requires the `json` feature).
-  #[cfg(feature = "json")]
+  /// JSON format (now standard since `serde_json` is a core dependency).
   Json,
   /// TOML format (requires the `toml` feature).
   #[cfg(feature = "toml")]
@@ -28,7 +28,6 @@ impl ConfigFormat {
   pub fn parse<T: DeserializeOwned>(&self, content: &str) -> Result<T, String> {
     match self {
       Self::Ron => ron::from_str(content).map_err(|e| format!("RON parsing error: {e}")),
-      #[cfg(feature = "json")]
       Self::Json => serde_json::from_str(content).map_err(|e| format!("JSON parsing error: {e}")),
 
       #[cfg(feature = "toml")]
@@ -71,7 +70,6 @@ mod tests {
     assert_eq!(config.version, 1);
   }
 
-  #[cfg(feature = "json")]
   #[test]
   fn test_parse_json() {
     let content = r#"{

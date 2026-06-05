@@ -12,7 +12,12 @@
 //! - **Diagnostic Integration**: Designed to work flawlessly with the broader Cirious Codex ecosystem to provide detailed, actionable error tracking when configuration issues occur.
 
 /// Contains abstractions for parsing configuration files in various formats
+///
 /// (JSON, TOML, YAML). Use the appropriate feature flags to enable them.
 pub mod format;
 
+/// Configuration builder module that handles merging and overrides.
+pub mod builder;
+
+pub use builder::ConfigBuilder;
 pub use serde::{Deserialize, Serialize};

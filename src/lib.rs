@@ -10,3 +10,9 @@
 //! - **Flexible Loading**: Built-in support for merging configurations from multiple sources, including files (TOML, JSON, YAML) and environment variables.
 //! - **Structured Deserialization**: Seamless integration with `serde` to map your settings directly into strongly-typed Rust structures.
 //! - **Diagnostic Integration**: Designed to work flawlessly with the broader Cirious Codex ecosystem to provide detailed, actionable error tracking when configuration issues occur.
+
+/// Contains abstractions for parsing configuration files in various formats
+/// (JSON, TOML, YAML). Use the appropriate feature flags to enable them.
+pub mod format;
+
+pub use serde::{Deserialize, Serialize};

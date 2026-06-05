@@ -15,7 +15,9 @@ dependencies = [
 name = "cirious_codex_config"
 version = "0.1.0"
 dependencies = [
+ "cirious_codex_logger",
  "cirious_codex_result",
+ "cirious_codex_term",
  "ron",
  "serde",
  "serde_json",
@@ -24,10 +26,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "cirious_codex_logger"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "039abd31ce5ae43ecd104d0b6087cbe8f3461e7bc531947b44cfa05af6c121a7"
+dependencies = [
+ "cirious_codex_term",
+]
+
+[[package]]
 name = "cirious_codex_result"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "071a083c79571e0ede7ee24e8b4d8be6596b8b7c8de8902928cee56e62ffee9b"
+
+[[package]]
+name = "cirious_codex_term"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "af9ac8b4c918590f8e1b6bc42f23e628b7d6bccd50ed4a87da184d92e4b13e56"
 
 [[package]]
 name = "equivalent"

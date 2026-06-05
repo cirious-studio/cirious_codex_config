@@ -15,6 +15,8 @@ exclude = [".github/", ".gitignore"]
 
 [dependencies]
 cirious_codex_result = "0.1"
+cirious_codex_term = { version = "0.1", optional = true }
+cirious_codex_logger = { version = "0.1", optional = true } 
 
 ron = "0.12.1"
 serde_json = { version = "1.0" }
@@ -27,7 +29,9 @@ serde_yaml = { version = "0.9", optional = true }
 default = []
 toml = ["dep:toml"]
 yaml = ["dep:serde_yaml"]
-full = ["toml", "yaml"]
+term = ["dep:cirious_codex_term"]
+logger = ["dep:cirious_codex_logger"]
+full = ["toml", "yaml", "term", "logger"]
 
 [lints.rust]
 unsafe_code = "forbid"

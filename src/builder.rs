@@ -23,6 +23,7 @@ impl ConfigBuilder {
       internal_map: Value::Object(serde_json::Map::new()),
     }
   }
+
   /// Incorporates a structured configuration source into the builder.
   ///
   /// This method parses the provided raw string content according to the specified
@@ -33,11 +34,14 @@ impl ConfigBuilder {
   /// Returns an error if the content cannot be parsed by the specified format.
   pub fn add_source(mut self, content: &str, format: ConfigFormat) -> Result<Self> {
     let parsed = format.parse::<Value>(content).map_err(|e| {
-      e.with_suggestion("Check the configuration file syntax for invalid formatting.")
-        .with_meta("format", format!("{format:?}"))
+      e.with_suggestion(crate::utils::format_suggestion(
+        "Check the configuration file syntax for invalid formatting.",
+      ))
+      .with_meta("format", format!("{format:?}"))
     })?;
 
     self.merge_value(parsed.value);
+
     codex_ok!(self)
   }
 

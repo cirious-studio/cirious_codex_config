@@ -18,6 +18,17 @@ It provides a rich, generic envelope around application settings, guaranteeing t
 
 Designed to be the immutable bedrock for configuration handling within the Cirious ecosystem, prioritizing maximum observability, flexible deserialization via `serde`, and a flawless developer experience.
 
+---
+
+## ✨ Features
+
+- Support for multiple configuration formats (JSON, TOML, YAML).
+- Environment variable overrides.
+- Robust validation and error tracking using `cirious_codex_result`.
+- Integrate optional feature for terminal color support with `cirious_codex_term`.
+
+---
+
 ## 🚀 Quick Start
  
 Add the following to your `Cargo.toml`:
@@ -64,12 +75,13 @@ fn main() {
 
 ## 🚧 Current Status & Roadmap
 
-The architecture is currently being mapped out for the initial `v0.1` release. Planned features include:
+The architecture is currently being mapped out for the initial `v0.2` release. Planned features include:
 
-- [x] Support for multiple configuration formats (JSON, TOML, YAML).
-- [x] Environment variable overrides.
-- [x] Robust validation and error tracking using `cirious_codex_result`.
-- [ ] Integrate optional feature for terminal color support with `cirious_codex_term`.
+- [ ] **Hierarchical Env Vars**: Map nested environment variables to structs.
+- [ ] **Live Reloading**: Hot-reload configurations via file system watches.
+- [ ] **Advanced Merge**: Deep merge nested configs across multiple sources.
+- [ ] **CLI Integration**: Override configurations via command-line arguments.
+- [ ] **Secrets Management**: Securely resolve encrypted secrets and vaults.
 
 ---
 

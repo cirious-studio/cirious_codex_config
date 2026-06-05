@@ -19,5 +19,7 @@ pub mod format;
 /// Configuration builder module that handles merging and overrides.
 pub mod builder;
 
+pub(crate) mod utils;
+
 pub use builder::ConfigBuilder;
 pub use serde::{Deserialize, Serialize};

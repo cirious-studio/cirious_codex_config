@@ -31,14 +31,14 @@ impl ConfigFormat {
       Self::Ron => match ron::from_str::<T>(content) {
         Ok(v) => codex_ok!(v),
         Err(e) => Err(CodexError::builder(
-          "RON_PARSE_ERROR",
+          crate::utils::format_error_code("RON_PARSE_ERROR"),
           format!("Invalid RON format: {e}"),
         )),
       },
       Self::Json => match serde_json::from_str::<T>(content) {
         Ok(v) => codex_ok!(v),
         Err(e) => Err(CodexError::builder(
-          "JSON_PARSE_ERROR",
+          crate::utils::format_error_code("JSON_PARSE_ERROR"),
           format!("Invalid JSON format: {e}"),
         )),
       },
@@ -47,7 +47,7 @@ impl ConfigFormat {
       Self::Toml => match toml::from_str::<T>(content) {
         Ok(v) => codex_ok!(v),
         Err(e) => Err(CodexError::builder(
-          "TOML_PARSE_ERROR",
+          crate::utils::format_error_code("TOML_PARSE_ERROR"),
           format!("Invalid TOML format: {e}"),
         )),
       },
@@ -56,14 +56,14 @@ impl ConfigFormat {
       Self::Yaml => match serde_yaml::from_str::<T>(content) {
         Ok(v) => codex_ok!(v),
         Err(e) => Err(CodexError::builder(
-          "YAML_PARSE_ERROR",
+          crate::utils::format_error_code("YAML_PARSE_ERROR"),
           format!("Invalid YAML format: {e}"),
         )),
       },
 
       #[allow(unreachable_patterns)]
       _ => Err(CodexError::builder(
-        "FORMAT_NOT_ENABLED",
+        crate::utils::format_error_code("FORMAT_NOT_ENABLED"),
         "Selected format is not enabled via features",
       )),
     }

@@ -75,7 +75,7 @@ fn main() {
 ### 🔭 v0.2.0 — Planned
 
 - [x] **Hierarchical Env Vars**: Map nested environment variables to structs.
-- [ ] **Live Reloading**: Hot-reload configurations via file system watches.
+- [x] **Live Reloading**: Hot-reload configurations via file system watches.
 - [ ] **Advanced Merge**: Deep merge nested configs across multiple sources.
 - [ ] **CLI Integration**: Override configurations via command-line arguments.
 - [ ] **Secrets Management**: Securely resolve encrypted secrets and vaults.

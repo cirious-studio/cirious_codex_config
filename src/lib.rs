@@ -21,7 +21,11 @@ pub mod format;
 /// Configuration builder module that handles merging and overrides.
 pub mod builder;
 
+/// Watch module for live reloading configuration files.
+pub mod watch;
+
 pub(crate) mod utils;
 
 pub use builder::ConfigBuilder;
 pub use serde::{Deserialize, Serialize};
+pub use watch::watch_config;

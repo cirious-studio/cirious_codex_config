@@ -20,28 +20,20 @@ Designed to be the immutable bedrock for configuration handling within the Cirio
 
 ---
 
-## ✨ Features
-
-- Support for multiple configuration formats (JSON, TOML, YAML).
-- Environment variable overrides.
-- Robust validation and error tracking using `cirious_codex_result`.
-- Integrate optional feature for terminal color support with `cirious_codex_term`.
-
----
-
 ## 🚀 Quick Start
  
 Add the following to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-cirious_codex_config = "0.1.0"
+cirious_codex_config = "0.2.0"
 ```
 
 And then in your code:
 
 ```rust
-use cirious_codex_config::{format::ConfigFormat, ConfigBuilder, Deserialize};
+use cirious_codex_config::{format::ConfigFormat, ConfigBuilder};
+use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 struct AppSettings {
@@ -50,12 +42,10 @@ struct AppSettings {
 }
 
 fn main() {
-    let ron_content = r#"
-        (
-            app_name: "Codex Engine",
-            debug_mode: true,
-        )
-    "#;
+    let ron_content = r#"(
+        app_name: "Codex Engine",
+        debug_mode: true,
+    )"#;
 
     // Build configuration using multiple sources (File + Environment Variables)
     let settings: AppSettings = ConfigBuilder::new()
@@ -75,9 +65,16 @@ fn main() {
 
 ## 🚧 Current Status & Roadmap
 
-The architecture is currently being mapped out for the initial `v0.2` release. Planned features include:
+### ✅ v0.1.0 — Initial Release
 
-- [ ] **Hierarchical Env Vars**: Map nested environment variables to structs.
+- [x] Support for multiple configuration formats (JSON, TOML, YAML).
+- [x] Environment variable overrides.
+- [x] Robust validation and error tracking using `cirious_codex_result`.
+- [x] Integrate optional feature for terminal color support with `cirious_codex_term`.
+
+### 🔭 v0.2.0 — Planned
+
+- [x] **Hierarchical Env Vars**: Map nested environment variables to structs.
 - [ ] **Live Reloading**: Hot-reload configurations via file system watches.
 - [ ] **Advanced Merge**: Deep merge nested configs across multiple sources.
 - [ ] **CLI Integration**: Override configurations via command-line arguments.

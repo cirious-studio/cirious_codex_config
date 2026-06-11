@@ -1,6 +1,6 @@
 [package]
 name = "cirious_codex_config"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Cirious Studio <cirious.studio@proton.me>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
@@ -14,9 +14,9 @@ categories = ["config", "development-tools"]
 exclude = [".github/", ".gitignore"]
 
 [dependencies]
-cirious_codex_result = "0.1"
-cirious_codex_term = { version = "0.1", optional = true }
-cirious_codex_logger = { version = "0.1", optional = true } 
+cirious_codex_result = "0.2.1"
+cirious_codex_term = { version = "0.2.1", optional = true }
+cirious_codex_logger = { version = "0.2.0", optional = true } 
 
 ron = "0.12.1"
 serde_json = { version = "1.0" }
@@ -34,7 +34,7 @@ logger = ["dep:cirious_codex_logger"]
 full = ["toml", "yaml", "term", "logger"]
 
 [lints.rust]
-unsafe_code = "forbid"
+unsafe_code = "warn"
 missing_docs = "warn"
 missing_debug_implementations = "warn"
 
@@ -43,3 +43,7 @@ pedantic = "warn"
 nursery = "warn"
 unwrap_used = "warn"
 expect_used = "warn"
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

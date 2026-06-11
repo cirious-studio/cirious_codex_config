@@ -13,7 +13,7 @@ dependencies = [
 
 [[package]]
 name = "cirious_codex_config"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "cirious_codex_logger",
  "cirious_codex_result",
@@ -27,24 +27,28 @@ dependencies = [
 
 [[package]]
 name = "cirious_codex_logger"
-version = "0.1.0"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "039abd31ce5ae43ecd104d0b6087cbe8f3461e7bc531947b44cfa05af6c121a7"
+checksum = "7136bbb2eac5256f9080b47ea86c7d55261f54d4f5ae0eeef97bca67d6dca75f"
 dependencies = [
  "cirious_codex_term",
 ]
 
 [[package]]
 name = "cirious_codex_result"
-version = "0.1.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "071a083c79571e0ede7ee24e8b4d8be6596b8b7c8de8902928cee56e62ffee9b"
+checksum = "9c597dad5f92ae770f84bb9885e5bad7665d208f6b94f2c754be7cd0fa68534c"
 
 [[package]]
 name = "cirious_codex_term"
-version = "0.1.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "af9ac8b4c918590f8e1b6bc42f23e628b7d6bccd50ed4a87da184d92e4b13e56"
+checksum = "9fcfe771c570a53848d4711fffa52143a6929ce23f5564672f0761139a78c514"
+dependencies = [
+ "libc",
+ "windows-sys",
+]
 
 [[package]]
 name = "equivalent"
@@ -73,6 +77,12 @@ name = "itoa"
 version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8f42a60cbdf9a97f5d2305f08a87dc4e09308d1276d28c869c684d7777685682"
+
+[[package]]
+name = "libc"
+version = "0.2.186"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "68ab91017fe16c622486840e4c83c9a37afeff978bd239b5293d61ece587de66"
 
 [[package]]
 name = "memchr"
@@ -256,6 +266,21 @@ name = "unsafe-libyaml"
 version = "0.2.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "673aac59facbab8a9007c7f6108d11f63b603f7cabff99fabf650fea5c32b861"
+
+[[package]]
+name = "windows-link"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f0805222e57f7521d6a62e36fa9163bc891acd422f971defe97d64e70d0a4fe5"
+
+[[package]]
+name = "windows-sys"
+version = "0.61.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ae137229bcbd6cdf0f7b80a31df61766145077ddf49416a728b02cb3921ff3fc"
+dependencies = [
+ "windows-link",
+]
 
 [[package]]
 name = "winnow"

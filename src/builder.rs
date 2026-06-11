@@ -74,6 +74,57 @@ impl ConfigBuilder {
     self
   }
 
+  /// Incorporates nested environment variables into the configuration state.
+  ///
+  /// This method iterates through the current process's environment variables,
+  /// filtering for those that start with the provided `prefix`. It then splits
+  /// the remaining key by the specified `separator` to construct a nested
+  /// configuration structure.
+  ///
+  /// # Arguments
+  ///
+  /// * `prefix` - The prefix to filter relevant environment variables (e.g., "APP_").
+  /// * `separator` - The delimiter used to define nesting levels (e.g., "__").
+  ///
+  /// # Example
+  ///
+  /// If you have `APP_DATABASE__PORT=5432`, calling this with `("APP_", "__")`
+  /// will map it to: `{ "database": { "port": 5432 } }`.
+  ///
+  /// # Note
+  ///
+  /// Environment variables that cannot be parsed as numbers or booleans are
+  /// stored as strings.
+  #[must_use]
+  pub fn add_env_nested(mut self, prefix: &str, separator: &str) -> Self {
+    for (key, val) in std::env::vars() {
+      if let Some(stripped) = key.strip_prefix(prefix) {
+        let keys: Vec<&str> = stripped.split(separator).collect();
+
+        let parsed_val = val
+          .parse::<i64>()
+          .map(|n| serde_json::Value::Number(n.into()))
+          .or_else(|_| val.parse::<bool>().map(serde_json::Value::Bool))
+          .unwrap_or(serde_json::Value::String(val));
+
+        let mut current = &mut self.internal_map;
+        for (i, k) in keys.iter().enumerate() {
+          let k_lower = k.to_lowercase();
+          if i == keys.len() - 1 {
+            if let serde_json::Value::Object(ref mut map) = current {
+              map.insert(k_lower, parsed_val.clone());
+            }
+          } else if let serde_json::Value::Object(ref mut map) = current {
+            current = map
+              .entry(k_lower)
+              .or_insert(serde_json::Value::Object(serde_json::Map::new()));
+          }
+        }
+      }
+    }
+    self
+  }
+
   /// Finalizes the build process and deserializes the aggregated configuration.
   ///
   /// This method consumes the `ConfigBuilder`, attempting to map the deeply merged

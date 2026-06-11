@@ -11,6 +11,8 @@
 //! - **Structured Deserialization**: Seamless integration with `serde` to map your settings directly into strongly-typed Rust structures.
 //! - **Diagnostic Integration**: Designed to work flawlessly with the broader Cirious Codex ecosystem to provide detailed, actionable error tracking when configuration issues occur.
 
+#![cfg_attr(docsrs, feature(doc_cfg))]
+
 /// Contains abstractions for parsing configuration files in various formats
 ///
 /// (JSON, TOML, YAML). Use the appropriate feature flags to enable them.

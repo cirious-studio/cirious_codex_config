@@ -18,17 +18,15 @@ struct AppConfig {
   database: Database,
 }
 
-fn main() {
-  // Simulate setting nested environment variables
+fn main() -> Result<(), Box<dyn std::error::Error>> {
   env::set_var("APP_DATABASE__URL", "postgres://db.example.com:5432/prod");
   env::set_var("APP_DATABASE__POOL_SIZE", "20");
 
-  // Build configuration using the nested approach
-  let config = ConfigBuilder::new().add_env_nested("APP_", "__").build::<AppConfig>();
+  let builder = ConfigBuilder::new().add_env_nested("APP_", "__");
 
-  if let Ok(ok) = config {
-    let config = ok.value;
-    println!("Database URL: {}", config.database.url);
-    println!("Pool Size: {}", config.database.pool_size);
-  }
+  let config = builder.build::<AppConfig>()?;
+
+  println!("Database URL: {}", config.value.database.url);
+  println!("Pool Size: {}", config.value.database.pool_size);
+  Ok(())
 }

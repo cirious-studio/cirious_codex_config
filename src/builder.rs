@@ -1,7 +1,7 @@
-use crate::format::ConfigFormat;
+use crate::{deep_merge, format::ConfigFormat};
 use cirious_codex_result::{codex_ok, CodexError, Result};
 use serde::de::DeserializeOwned;
-use serde_json::Value;
+use serde_json::{Map, Value};
 use std::env;
 
 /// A robust builder for constructing, merging, and resolving configurations.
@@ -95,29 +95,54 @@ impl ConfigBuilder {
   ///
   /// Environment variables that cannot be parsed as numbers or booleans are
   /// stored as strings.
+  ///
+  /// # Panics
+  ///
+  /// Panics if `internal_map` is not an object, which should never happen
+  /// under normal circumstances.
   #[must_use]
   pub fn add_env_nested(mut self, prefix: &str, separator: &str) -> Self {
-    for (key, val) in std::env::vars() {
+    for (key, val) in env::vars() {
       if let Some(stripped) = key.strip_prefix(prefix) {
-        let keys: Vec<&str> = stripped.split(separator).collect();
+        let keys: Vec<String> = stripped.split(separator).map(str::to_lowercase).collect();
+        if keys.is_empty() {
+          continue;
+        }
 
         let parsed_val = val
           .parse::<i64>()
-          .map(|n| serde_json::Value::Number(n.into()))
-          .or_else(|_| val.parse::<bool>().map(serde_json::Value::Bool))
-          .unwrap_or(serde_json::Value::String(val));
+          .map(|n| Value::Number(n.into()))
+          .or_else(|_| val.parse::<bool>().map(Value::Bool))
+          .unwrap_or(Value::String(val));
 
-        let mut current = &mut self.internal_map;
-        for (i, k) in keys.iter().enumerate() {
-          let k_lower = k.to_lowercase();
-          if i == keys.len() - 1 {
-            if let serde_json::Value::Object(ref mut map) = current {
-              map.insert(k_lower, parsed_val.clone());
+        let mut node = &mut self.internal_map;
+
+        // Navega até o penúltimo nível
+        for k in keys.iter().take(keys.len() - 1) {
+          // Força a estrutura para Object se não for
+          if !node.is_object() {
+            *node = Value::Object(Map::new());
+          }
+
+          // Extraímos o map mutável, e garantimos que o borrow termina
+          // antes da próxima iteração através do scope block
+          node = {
+            if let Some(map) = node.as_object_mut() {
+              map.entry(k).or_insert_with(|| Value::Object(Map::new()))
+            } else {
+              return self;
             }
-          } else if let serde_json::Value::Object(ref mut map) = current {
-            current = map
-              .entry(k_lower)
-              .or_insert(serde_json::Value::Object(serde_json::Map::new()));
+          };
+        }
+
+        // Aplica no último nível
+        if !node.is_object() {
+          *node = Value::Object(Map::new());
+        }
+        if let Some(map) = node.as_object_mut() {
+          if let Some(last_key) = keys.last() {
+            let target = map.entry(last_key).or_insert(Value::Null);
+            deep_merge(target, parsed_val);
           }
         }
       }
@@ -146,18 +171,6 @@ impl ConfigBuilder {
 
   /// Recursively merges a parsed `serde_json::Value` into the internal configuration map.
   fn merge_value(&mut self, other: Value) {
-    merge(&mut self.internal_map, other);
-  }
-}
-
-/// A recursive utility function to merge two `serde_json::Value` instances.
-fn merge(a: &mut Value, b: Value) {
-  match (a, b) {
-    (&mut Value::Object(ref mut a_map), Value::Object(b_map)) => {
-      for (k, v) in b_map {
-        merge(a_map.entry(k).or_insert(Value::Null), v);
-      }
-    }
-    (a_val, b_val) => *a_val = b_val,
+    deep_merge(&mut self.internal_map, other);
   }
 }

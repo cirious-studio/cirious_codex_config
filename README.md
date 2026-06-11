@@ -76,7 +76,7 @@ fn main() {
 
 - [x] **Hierarchical Env Vars**: Map nested environment variables to structs.
 - [x] **Live Reloading**: Hot-reload configurations via file system watches.
-- [ ] **Advanced Merge**: Deep merge nested configs across multiple sources.
+- [x] **Advanced Merge**: Deep merge nested configs across multiple sources.
 - [ ] **CLI Integration**: Override configurations via command-line arguments.
 - [ ] **Secrets Management**: Securely resolve encrypted secrets and vaults.
 

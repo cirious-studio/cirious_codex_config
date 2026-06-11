@@ -24,8 +24,12 @@ pub mod builder;
 /// Watch module for live reloading configuration files.
 pub mod watch;
 
+/// Merge module for merging configurations.
+pub mod merge;
+
 pub(crate) mod utils;
 
 pub use builder::ConfigBuilder;
+pub use merge::deep_merge;
 pub use serde::{Deserialize, Serialize};
 pub use watch::watch_config;

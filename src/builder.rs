@@ -2,7 +2,7 @@ use crate::{deep_merge, format::ConfigFormat};
 use cirious_codex_result::{codex_ok, CodexError, Result};
 use serde::de::DeserializeOwned;
 use serde_json::{Map, Value};
-use std::env;
+use std::{collections::HashMap, env};
 
 /// A robust builder for constructing, merging, and resolving configurations.
 ///
@@ -117,15 +117,11 @@ impl ConfigBuilder {
 
         let mut node = &mut self.internal_map;
 
-        // Navega até o penúltimo nível
         for k in keys.iter().take(keys.len() - 1) {
-          // Força a estrutura para Object se não for
           if !node.is_object() {
             *node = Value::Object(Map::new());
           }
 
-          // Extraímos o map mutável, e garantimos que o borrow termina
-          // antes da próxima iteração através do scope block
           node = {
             if let Some(map) = node.as_object_mut() {
               map.entry(k).or_insert_with(|| Value::Object(Map::new()))
@@ -135,7 +131,6 @@ impl ConfigBuilder {
           };
         }
 
-        // Aplica no último nível
         if !node.is_object() {
           *node = Value::Object(Map::new());
         }
@@ -147,6 +142,64 @@ impl ConfigBuilder {
         }
       }
     }
+    self
+  }
+
+  /// Adds command-line overrides to the configuration.
+  ///
+  /// This method iterates through a `HashMap` of key-value pairs, attempting to parse
+  /// each value as a number, boolean, or string. The parsed value is then merged into
+  /// the internal configuration map.
+  ///
+  /// # Arguments
+  ///
+  /// * `overrides` - A `HashMap` where keys are configuration property names and
+  ///   values are their string representations.
+  ///
+  /// # Errors
+  ///
+  /// This method currently does not return errors, but it may panic if the internal
+  /// map is not an object (which should not happen under normal circumstances).
+  #[must_use]
+  pub fn add_cli_overrides(mut self, overrides: HashMap<String, String>) -> Self {
+    for (key, val) in overrides {
+      let keys: Vec<String> = key.split('.').map(str::to_lowercase).collect();
+
+      let parsed_val = val
+        .parse::<i64>()
+        .map(|num| Value::Number(num.into()))
+        .or_else(|_| val.parse::<bool>().map(Value::Bool))
+        .unwrap_or(Value::String(val));
+
+      // Deep navigation identical to add_env_nested to support merge
+      let mut node = &mut self.internal_map;
+
+      for k in keys.iter().take(keys.len() - 1) {
+        if !node.is_object() {
+          *node = Value::Object(Map::new());
+        }
+
+        node = {
+          if let Some(map) = node.as_object_mut() {
+            map.entry(k).or_insert_with(|| Value::Object(Map::new()))
+          } else {
+            return self;
+          }
+        };
+      }
+
+      if !node.is_object() {
+        *node = Value::Object(Map::new());
+      }
+
+      if let Some(map) = node.as_object_mut() {
+        if let Some(last_key) = keys.last() {
+          let target = map.entry(last_key).or_insert(Value::Null);
+          deep_merge(target, parsed_val);
+        }
+      }
+    }
+
     self
   }
 

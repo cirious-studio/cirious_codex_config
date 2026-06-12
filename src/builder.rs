@@ -1,4 +1,4 @@
-use crate::{deep_merge, format::ConfigFormat};
+use crate::{deep_merge, format::ConfigFormat, resolve_with_providers, SecretProvider};
 use cirious_codex_result::{codex_ok, CodexError, Result};
 use serde::de::DeserializeOwned;
 use serde_json::{Map, Value};
@@ -13,6 +13,7 @@ use std::{collections::HashMap, env};
 #[derive(Debug, Default)]
 pub struct ConfigBuilder {
   internal_map: Value,
+  providers: HashMap<String, Box<dyn SecretProvider>>,
 }
 
 impl ConfigBuilder {
@@ -21,6 +22,7 @@ impl ConfigBuilder {
   pub fn new() -> Self {
     Self {
       internal_map: Value::Object(serde_json::Map::new()),
+      providers: HashMap::new(),
     }
   }
 
@@ -203,6 +205,51 @@ impl ConfigBuilder {
     self
   }
 
+  /// Registers a secret provider with a given scheme.
+  ///
+  /// # Arguments
+  ///
+  /// * `scheme` - The scheme to register the provider with.
+  /// * `provider` - The secret provider to register.
+  ///
+  /// # Returns
+  ///
+  /// The `ConfigBuilder` with the registered secret provider.
+  #[must_use]
+  pub fn register_provider(mut self, scheme: &str, provider: Box<dyn SecretProvider>) -> Self {
+    self.providers.insert(scheme.to_string(), provider);
+    self
+  }
+
+  /// Resolves secrets in the internal configuration map.
+  ///
+  /// This method iterates through a `HashMap` of key-value pairs, attempting to parse
+  /// each value as a number, boolean, or string. The parsed value is then merged into
+  /// the internal configuration map.
+  fn resolve_all_secrets(&mut self) {
+    fn walk(value: &mut Value, providers: &HashMap<String, Box<dyn SecretProvider>>) {
+      match value {
+        Value::String(s) if s.contains("://") => {
+          if let Some(resolved) = resolve_with_providers(s, providers) {
+            *value = Value::String(resolved.value);
+          }
+        }
+        Value::Object(map) => {
+          for v in map.values_mut() {
+            walk(v, providers);
+          }
+        }
+        Value::Array(arr) => {
+          for v in arr {
+            walk(v, providers);
+          }
+        }
+        _ => {}
+      }
+    }
+    walk(&mut self.internal_map, &self.providers);
+  }
+
   /// Finalizes the build process and deserializes the aggregated configuration.
   ///
   /// This method consumes the `ConfigBuilder`, attempting to map the deeply merged
@@ -210,7 +257,8 @@ impl ConfigBuilder {
   ///
   /// # Errors
   /// Returns an error if the merged configuration cannot be mapped to the target type `T`.
-  pub fn build<T: DeserializeOwned>(self) -> Result<T> {
+  pub fn build<T: DeserializeOwned>(mut self) -> Result<T> {
+    self.resolve_all_secrets();
     let result = serde_json::from_value(self.internal_map).map_err(|e| {
       CodexError::builder(
         "CONFIG_BUILD_ERROR",

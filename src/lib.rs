@@ -27,9 +27,13 @@ pub mod watch;
 /// Merge module for merging configurations.
 pub mod merge;
 
+/// Secrets module for managing secrets.
+pub mod secrets;
+
 pub(crate) mod utils;
 
 pub use builder::ConfigBuilder;
 pub use merge::deep_merge;
+pub use secrets::{resolve_secrets, resolve_with_providers, SecretProvider};
 pub use serde::{Deserialize, Serialize};
 pub use watch::watch_config;

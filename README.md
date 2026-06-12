@@ -72,13 +72,22 @@ fn main() {
 - [x] Robust validation and error tracking using `cirious_codex_result`.
 - [x] Integrate optional feature for terminal color support with `cirious_codex_term`.
 
-### 🔭 v0.2.0 — Planned
+### ✅ v0.2.0 — Implemented
 
 - [x] **Hierarchical Env Vars**: Map nested environment variables to structs.
 - [x] **Live Reloading**: Hot-reload configurations via file system watches.
 - [x] **Advanced Merge**: Deep merge nested configs across multiple sources.
 - [x] **CLI Integration**: Override configurations via command-line arguments.
-- [ ] **Secrets Management**: Securely resolve encrypted secrets and vaults.
+- [x] **Secrets Management**: Securely resolve encrypted secrets and vaults.
+
+### 🔭 v0.3.0 — Production Readiness & Governance
+
+- [ ] **Schema Validation**: Implement automatic JSON Schema generation from Rust structs to enable IDE autocompletion and early validation.
+- [ ] **Semantic Validation**: Introduce declarative validation attributes (e.g., #[codex(min = 1, max = 100)]) to ensure configuration values are logically sound.
+- [ ] **Distributed Providers**: Add support for remote configuration fetching via Etcd or Consul, ideal for cloud-native microservices.
+- [ ] **Audit & Debug Dumps**: Implement secure export of resolved configuration state (with automatic sensitive data masking) for production troubleshooting.
+- [ ] **Config Linting CLI**: Release a companion tool codex-lint to scan projects for missing environment variables or configuration conflicts.
+- [ ] **Tracing & Observability**: Integrate tracing to emit structured logs regarding the origin and resolution lifecycle of every configuration key.
 
 ---
 
